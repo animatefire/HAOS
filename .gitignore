@@ -1,0 +1,38 @@
+# Secrets - never commit
+secrets.yaml
+
+# HA runtime/internal state
+.storage/
+.cloud/
+.ha_run.lock
+.HA_VERSION
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+*.db.corrupt.*
+
+# Logs
+*.log
+*.log.1
+*.log.fault
+*.log.old
+
+# Cache
+.cache/
+
+# OS/editor junk
+.DS_Store
+*.swp
+
+# Zigbee2MQTT runtime state
+zigbee2mqtt/database.db
+zigbee2mqtt/coordinator_backup.json
+zigbee2mqtt/log/
+zigbee2mqtt/state.json
+
+# Python cache
+**/__pycache__/
+*.pyc
+custom_components/

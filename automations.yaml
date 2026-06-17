@@ -1,0 +1,644 @@
+- id: '1738112865659'
+  alias: G4 Instant People Alarm
+  description: Triggers pulsing light when a person is detected at night.
+  triggers:
+  - type: motion
+    device_id: 372cbcd027b7be760af8ed39e6bdc26b
+    entity_id: 1a43f23094afea9bb65dfbbb6266dca1
+    domain: binary_sensor
+    trigger: device
+  - type: motion
+    device_id: a16bf8ad243af6206eb8f4b2d2887a25
+    entity_id: 0210109b8505c8034e742fec72f7ae1e
+    domain: binary_sensor
+    trigger: device
+  conditions:
+  - condition: sun
+    after: sunset
+    before: sunrise
+  - condition: device
+    type: is_on
+    device_id: 372cbcd027b7be760af8ed39e6bdc26b
+    entity_id: c7e36e2101e1d5b99720dd61572adb1c
+    domain: switch
+  - condition: or
+    conditions:
+    - type: is_on
+      condition: device
+      device_id: a16bf8ad243af6206eb8f4b2d2887a25
+      entity_id: b65836ad2190aff9f7c7c8da042ee556
+      domain: binary_sensor
+  actions:
+  - action: script.pulsing_light_effect
+    data: {}
+  - choose:
+    - conditions:
+      - condition: sun
+        after: sunset
+        before: sunrise
+      sequence:
+      - target:
+          entity_id: all
+        action: light.turn_on
+  mode: single
+- id: '1738118309564'
+  alias: Wake-Up Light Gradual On
+  description: Gradually turns on the bedroom light to wake up, only if it's still
+    dark outside.
+  triggers:
+  - at: 05:50:00
+    trigger: time
+    enabled: true
+  conditions:
+  - condition: time
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+  - condition: state
+    entity_id: sun.sun
+    state: below_horizon
+  actions:
+  - target:
+      entity_id: light.wiz_tunable_white_77ca18
+    data:
+      brightness: 1
+    action: light.turn_on
+  - repeat:
+      count: 60
+      sequence:
+      - target:
+          entity_id: light.wiz_tunable_white_77ca18
+        data:
+          brightness: '{{ repeat.index * 4 }}'
+        action: light.turn_on
+      - delay:
+          seconds: 60
+  mode: single
+- id: '1738200365623'
+  alias: Shield TV Mood Lighting Playing
+  description: Dim lights when watching Shield TV
+  triggers:
+  - trigger: state
+    entity_id:
+    - media_player.android_tv_192_168_5_246
+    to: playing
+    for:
+      seconds: 2
+  conditions:
+  - condition: sun
+    after: sunset
+    before: sunrise
+  actions:
+  - action: light.turn_on
+    metadata: {}
+    data:
+      kelvin: 2619
+      brightness_pct: 5
+      transition: 10
+    target:
+      area_id: living_room
+  mode: single
+- id: '1738201463765'
+  alias: Plex Mood Lighting Paused
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - media_player.android_tv_192_168_5_246
+    for:
+      seconds: 5
+    from: playing
+  conditions:
+  - condition: sun
+    before: sunrise
+    after: sunset
+  actions:
+  - action: light.turn_on
+    metadata: {}
+    data:
+      kelvin: 3012
+      brightness_pct: 36
+      transition: 3000
+    target:
+      area_id: living_room
+  mode: single
+- id: '1738237505227'
+  alias: Sunrise turn off Lights
+  description: Turns off all lights 15 minutes after sunrise.
+  triggers:
+  - event: sunrise
+    trigger: sun
+  conditions: []
+  actions:
+  - metadata: {}
+    data: {}
+    target:
+      entity_id: all
+    action: light.turn_off
+  mode: single
+- id: '1738270037956'
+  alias: Sunset -> Lights On
+  description: ''
+  triggers:
+  - entity_id:
+    - sun.sun
+    attribute: elevation
+    below: 6
+    trigger: numeric_state
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: numeric_state
+        entity_id: sun.sun
+        attribute: elevation
+        below: 6
+        above: 0
+      sequence:
+      - action: light.turn_on
+        metadata: {}
+        data:
+          brightness_step_pct: 20
+        target:
+          area_id: living_room
+    - conditions:
+      - condition: numeric_state
+        entity_id: sun.sun
+        attribute: elevation
+        below: 0
+        above: -6
+      sequence:
+      - action: light.turn_on
+        target:
+          area_id: living_room
+        data:
+          brightness_step_pct: 20
+      - action: system_log.write
+        data:
+          message: Living room lights turned on at 0° elevation (Civil Twilight).
+          level: info
+    - conditions:
+      - condition: numeric_state
+        entity_id: sun.sun
+        attribute: elevation
+        below: -6
+        above: -12
+      sequence:
+      - action: light.turn_on
+        target:
+          area_id: living_room
+        data:
+          brightness_step_pct: 20
+      - action: system_log.write
+        data:
+          message: Living room lights brightness increased by 10% at -6° elevation
+            (Nautical Twilight).
+          level: info
+    - conditions:
+      - condition: numeric_state
+        entity_id: sun.sun
+        attribute: elevation
+        below: -12
+        above: -18
+      sequence:
+      - action: light.turn_on
+        target:
+          area_id: living_room
+        data:
+          brightness_step_pct: 10
+      - action: system_log.write
+        data:
+          message: Living room lights brightness increased by 10% at -12° elevation
+            (Astronomical Twilight).
+          level: info
+    - conditions:
+      - condition: numeric_state
+        entity_id: sun.sun
+        attribute: elevation
+        below: -18
+        above: -24
+      sequence:
+      - action: light.turn_on
+        target:
+          area_id: bedroom
+        data:
+          brightness_pct: 30
+      - action: system_log.write
+        data:
+          message: Living room lights brightness increased by 10% and Bedroom lights
+            set to 30% at -18° elevation (Night).
+          level: info
+      - action: light.turn_on
+        target:
+          area_id: living_room
+        data:
+          brightness_step_pct: 10
+  mode: single
+- id: '1781491393900'
+  alias: Window & AC Advice - Outside cooler than inside
+  description: Notify when outdoor heat index drops below indoor, with humidity check
+  triggers:
+  - value_template: '{{ states(''sensor.outdoor_heat_index'') | float(0) < states(''sensor.indoor_1_heat_index'')
+      | float(0) - 2 }}
+
+      '
+    for: 00:10:00
+    trigger: template
+  actions:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ states(''sensor.outdoor_dewpoint'') | float(0) < states(''sensor.indoor_1_dewpoint'')
+          | float(0) + 3 }}
+
+          '
+      sequence:
+      - data:
+          title: "Open the windows \U0001FA9F"
+          message: 'Outside feels like {{ states(''sensor.outdoor_heat_index'') }}°F,
+            inside feels like {{ states(''sensor.indoor_1_heat_index'') }}°F. Outdoor
+            dewpoint is {{ states(''sensor.outdoor_dewpoint'') }}°F — fresh air time!
+
+            '
+        action: notify.mobile_app_johns_iphone_3
+    - conditions:
+      - condition: template
+        value_template: '{{ states(''sensor.outdoor_dewpoint'') | float(0) >= states(''sensor.indoor_1_dewpoint'')
+          | float(0) + 3 }}
+
+          '
+      sequence:
+      - data:
+          title: Run the A/C ❄️
+          message: 'Outside feels like {{ states(''sensor.outdoor_heat_index'') }}°F
+            (cooler than inside), but outdoor dewpoint is {{ states(''sensor.outdoor_dewpoint'')
+            }}°F vs indoor {{ states(''sensor.indoor_1_dewpoint'') }}°F — too humid
+            to open up. Better to run the A/C.
+
+            '
+        action: notify.mobile_app_johns_iphone_3
+  mode: single
+- id: '1781491419230'
+  alias: Close Windows - Outside warmer than inside
+  description: Notify when outdoor heat index rises above indoor
+  triggers:
+  - value_template: '{{ states(''sensor.outdoor_heat_index'') | float(0) > states(''sensor.indoor_1_heat_index'')
+      | float(0) + 2 }}
+
+      '
+    for: 00:05:00
+    trigger: template
+  actions:
+  - data:
+      title: "Close the windows \U0001F321️"
+      message: 'Outside now feels like {{ states(''sensor.outdoor_heat_index'') }}°F,
+        inside is {{ states(''sensor.indoor_1_heat_index'') }}°F. Keep the cool air
+        in!
+
+        '
+    action: notify.mobile_app_johns_iphone_3
+  mode: single
+- id: '1781552845894'
+  alias: Indoor Climate Monitor
+  description: Monitors indoor comfort across all rooms and recommends window/AC action
+  triggers:
+  - minutes: /10
+    trigger: time_pattern
+  actions:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ uncomfortable_rooms | length == 0 }}'
+      sequence:
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: input_boolean.indoor_climate_uncomfortable
+            state: 'on'
+          sequence:
+          - target:
+              entity_id: input_boolean.indoor_climate_uncomfortable
+            action: input_boolean.turn_off
+          - data:
+              title: "All good — close up \U0001F33F"
+              message: 'All rooms are now comfortable. Close the windows and turn
+                off the A/C.
+
+                '
+            action: notify.mobile_app_johns_iphone_3
+    - conditions:
+      - condition: template
+        value_template: '{{ uncomfortable_rooms | length > 0 }}'
+      sequence:
+      - choose:
+        - conditions:
+          - condition: template
+            value_template: "{{ outdoor_hi < (uncomfortable_rooms | map(attribute='hi')
+              | list | min)\n   and outdoor_dp <= (uncomfortable_rooms | map(attribute='dp')
+              | list | min) + dp_buffer }}\n"
+          sequence:
+          - choose:
+            - conditions:
+              - condition: state
+                entity_id: input_boolean.indoor_climate_uncomfortable
+                state: 'off'
+              sequence:
+              - target:
+                  entity_id: input_boolean.indoor_climate_uncomfortable
+                action: input_boolean.turn_on
+              - data:
+                  title: "Open the windows \U0001FA9F"
+                  message: 'Outside feels like {{ outdoor_hi }}°F (DP {{ outdoor_dp
+                    }}°F) — open up!
+
+                    {% for room in uncomfortable_rooms %} · {{ room.area }}: {{ room.hi
+                    }}°F {% endfor %}
+
+                    '
+                action: notify.mobile_app_johns_iphone_3
+        - conditions:
+          - condition: template
+            value_template: "{{ outdoor_hi >= (uncomfortable_rooms | map(attribute='hi')
+              | list | min)\n   or outdoor_dp > (uncomfortable_rooms | map(attribute='dp')
+              | list | min) + dp_buffer }}\n"
+          sequence:
+          - choose:
+            - conditions:
+              - condition: state
+                entity_id: input_boolean.indoor_climate_uncomfortable
+                state: 'off'
+              sequence:
+              - target:
+                  entity_id: input_boolean.indoor_climate_uncomfortable
+                action: input_boolean.turn_on
+              - data:
+                  title: Run the A/C ❄️
+                  message: 'Outside too warm or humid ({{ outdoor_hi }}°F, DP {{ outdoor_dp
+                    }}°F).
+
+                    {% for room in uncomfortable_rooms %} · {{ room.area }}: {{ room.hi
+                    }}°F {% endfor %}
+
+                    '
+                action: notify.mobile_app_johns_iphone_3
+  variables:
+    comfort_threshold: '{{ states(''input_number.comfort_heat_index_threshold'') |
+      float(76) }}'
+    dp_buffer: '{{ states(''input_number.dewpoint_buffer'') | float(0) }}'
+    outdoor_hi: '{{ states(''sensor.outdoor_heat_index'') | float(0) }}'
+    outdoor_dp: '{{ states(''sensor.outdoor_dewpoint'') | float(0) }}'
+    rooms: "{% set ns = namespace(rooms=[]) %} {% for i in range(1, 7) %}\n  {% set
+      hi_entity = 'sensor.indoor_' ~ i ~ '_heat_index' %}\n  {% set dp_entity = 'sensor.indoor_'
+      ~ i ~ '_dewpoint' %}\n  {% if states(hi_entity) not in ['unavailable', 'unknown']
+      %}\n    {% set hi = states(hi_entity) | float(0) %}\n    {% set dp = states(dp_entity)
+      | float(0) %}\n    {% set area = area_name(hi_entity) %}\n    {% set ns.rooms
+      = ns.rooms + [{'id': i, 'hi': hi, 'dp': dp, 'area': area}] %}\n  {% endif %}\n{%
+      endfor %} {{ ns.rooms }}\n"
+    uncomfortable_rooms: "{% set ns = namespace(rooms=[]) %} {% for i in range(1,
+      7) %}\n  {% set hi_entity = 'sensor.indoor_' ~ i ~ '_heat_index' %}\n  {% set
+      dp_entity = 'sensor.indoor_' ~ i ~ '_dewpoint' %}\n  {% if states(hi_entity)
+      not in ['unavailable', 'unknown'] %}\n    {% set hi = states(hi_entity) | float(0)
+      %}\n    {% set dp = states(dp_entity) | float(0) %}\n    {% set area = area_name(hi_entity)
+      %}\n    {% if hi > comfort_threshold %}\n      {% set ns.rooms = ns.rooms +
+      [{'id': i, 'hi': hi, 'dp': dp, 'area': area}] %}\n    {% endif %}\n  {% endif
+      %}\n{% endfor %} {{ ns.rooms }}\n"
+  mode: single
+- id: '1781579109534'
+  alias: Indoor Climate Monitor v2
+  description: Multi-room comfort monitoring with five-state logic and directionality
+  triggers:
+  - minutes: /10
+    trigger: time_pattern
+  actions:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ house_state == ''comfortable'' }}'
+      sequence:
+      - choose:
+        - conditions:
+          - condition: template
+            value_template: '{{ current_climate_state != ''comfortable'' }}'
+          sequence:
+          - action: input_select.select_option
+            target:
+              entity_id: input_select.indoor_climate_state
+            data:
+              option: comfortable
+          - action: notify.mobile_app_johns_iphone_3
+            data:
+              title: "All good \U0001F33F"
+              message: '{{ direction_label }} House is comfortable. Close windows,
+                no heating or cooling needed.
+
+                '
+    - conditions:
+      - condition: template
+        value_template: '{{ house_state == ''less_comfortable_warm'' }}'
+      sequence:
+      - choose:
+        - conditions:
+          - condition: template
+            value_template: '{{ current_climate_state != ''less_comfortable_warm''
+              }}'
+          sequence:
+          - action: input_select.select_option
+            target:
+              entity_id: input_select.indoor_climate_state
+            data:
+              option: less_comfortable_warm
+          - action: notify.mobile_app_johns_iphone_3
+            data:
+              title: "Heads up \U0001F7E1 getting warm"
+              message: '{{ direction_label }} House is trending warm but still tolerable.
+
+                {% for room in less_comfortable_rooms %} · {{ room.area }}: {{ room.hi
+                }}°F {% endfor %}
+
+                '
+    - conditions:
+      - condition: template
+        value_template: '{{ house_state == ''less_comfortable_cold'' }}'
+      sequence:
+      - choose:
+        - conditions:
+          - condition: template
+            value_template: '{{ current_climate_state != ''less_comfortable_cold''
+              }}'
+          sequence:
+          - action: input_select.select_option
+            target:
+              entity_id: input_select.indoor_climate_state
+            data:
+              option: less_comfortable_cold
+          - action: notify.mobile_app_johns_iphone_3
+            data:
+              title: "Heads up \U0001F535 getting cool"
+              message: '{{ direction_label }} House is trending cool but still tolerable.
+
+                {% for room in less_comfortable_rooms %} · {{ room.area }}: {{ room.hi
+                }}°F {% endfor %}
+
+                '
+    - conditions:
+      - condition: template
+        value_template: '{{ house_state == ''uncomfortable_warm'' }}'
+      sequence:
+      - choose:
+        - conditions:
+          - condition: template
+            value_template: '{{ current_climate_state != ''uncomfortable_warm'' }}'
+          sequence:
+          - action: input_select.select_option
+            target:
+              entity_id: input_select.indoor_climate_state
+            data:
+              option: uncomfortable_warm
+          - choose:
+            - conditions:
+              - condition: template
+                value_template: "{{ outdoor_hi < (uncomfortable_warm_rooms | map(attribute='hi')
+                  | list | min)\n   and outdoor_dp <= (uncomfortable_warm_rooms |
+                  map(attribute='dp') | list | min) + dp_buffer }}\n"
+              sequence:
+              - action: notify.mobile_app_johns_iphone_3
+                data:
+                  title: "Open the windows \U0001FA9F"
+                  message: '{{ direction_label }} Too warm inside. Outside feels like
+                    {{ outdoor_hi }}°F (DP {{ outdoor_dp }}°F) — open up!
+
+                    {% for room in uncomfortable_warm_rooms %} · {{ room.area }}:
+                    {{ room.hi }}°F {% endfor %}
+
+                    '
+            - conditions:
+              - condition: template
+                value_template: "{{ outdoor_hi >= (uncomfortable_warm_rooms | map(attribute='hi')
+                  | list | min)\n   or outdoor_dp > (uncomfortable_warm_rooms | map(attribute='dp')
+                  | list | min) + dp_buffer }}\n"
+              sequence:
+              - action: notify.mobile_app_johns_iphone_3
+                data:
+                  title: Run the A/C ❄️
+                  message: '{{ direction_label }} Too warm inside and outside isn''t
+                    helping ({{ outdoor_hi }}°F, DP {{ outdoor_dp }}°F).
+
+                    {% for room in uncomfortable_warm_rooms %} · {{ room.area }}:
+                    {{ room.hi }}°F {% endfor %}
+
+                    '
+    - conditions:
+      - condition: template
+        value_template: '{{ house_state == ''uncomfortable_cold'' }}'
+      sequence:
+      - choose:
+        - conditions:
+          - condition: template
+            value_template: '{{ current_climate_state != ''uncomfortable_cold'' }}'
+          sequence:
+          - action: input_select.select_option
+            target:
+              entity_id: input_select.indoor_climate_state
+            data:
+              option: uncomfortable_cold
+          - choose:
+            - conditions:
+              - condition: template
+                value_template: '{{ outdoor_hi > (uncomfortable_cold_rooms | map(attribute=''hi'')
+                  | list | max) }}
+
+                  '
+              sequence:
+              - action: notify.mobile_app_johns_iphone_3
+                data:
+                  title: "Open the windows \U0001FA9F"
+                  message: '{{ direction_label }} Too cold inside. Outside feels like
+                    {{ outdoor_hi }}°F — warmer than inside, open up!
+
+                    {% for room in uncomfortable_cold_rooms %} · {{ room.area }}:
+                    {{ room.hi }}°F {% endfor %}
+
+                    '
+            - conditions:
+              - condition: template
+                value_template: '{{ outdoor_hi <= (uncomfortable_cold_rooms | map(attribute=''hi'')
+                  | list | max) }}
+
+                  '
+              sequence:
+              - action: notify.mobile_app_johns_iphone_3
+                data:
+                  title: "Close windows, consider heat \U0001F525"
+                  message: '{{ direction_label }} Too cold inside and outside is {{
+                    outdoor_hi }}°F — won''t help. Close up and consider heat.
+
+                    {% for room in uncomfortable_cold_rooms %} · {{ room.area }}:
+                    {{ room.hi }}°F {% endfor %}
+
+                    '
+  variables:
+    center: '{{ states(''input_number.comfort_hi_center'') | float(72) }}'
+    range_val: '{{ states(''input_number.comfort_hi_range'') | float(4) }}'
+    tolerance: '{{ states(''input_number.comfort_hi_tolerance'') | float(3) }}'
+    dp_buffer: '{{ states(''input_number.dewpoint_buffer'') | float(0) }}'
+    outdoor_hi: '{{ states(''sensor.outdoor_heat_index'') | float(0) }}'
+    outdoor_dp: '{{ states(''sensor.outdoor_dewpoint'') | float(0) }}'
+    house_state: '{{ states(''sensor.house_comfort_aggregate'') }}'
+    current_climate_state: '{{ states(''input_select.indoor_climate_state'') }}'
+    previous_severity: '{% set map = {''uncomfortable_cold'': -2, ''less_comfortable_cold'':
+      -1, ''comfortable'': 0, ''less_comfortable_warm'': 1, ''uncomfortable_warm'':
+      2} %} {{ map[current_climate_state] if current_climate_state in map else 0 }}
+
+      '
+    new_severity: '{% set map = {''uncomfortable_cold'': -2, ''less_comfortable_cold'':
+      -1, ''comfortable'': 0, ''less_comfortable_warm'': 1, ''uncomfortable_warm'':
+      2} %} {{ map[house_state] if house_state in map else 0 }}
+
+      '
+    delta: '{{ new_severity | int - previous_severity | int }}'
+    direction_label: "{% set d = delta | int %} {% set prev = current_climate_state
+      %} {% set new = house_state %} {% if d == 0 %}no change {% elif prev == 'uncomfortable_warm'
+      and new == 'less_comfortable_warm' %}\U0001F4C9 Cooling down — still warm but
+      improving {% elif prev == 'uncomfortable_cold' and new == 'less_comfortable_cold'
+      %}\U0001F4C8 Warming up — still cool but improving {% elif prev == 'less_comfortable_warm'
+      and new == 'uncomfortable_warm' %}\U0001F4C8 Crossed into uncomfortable — too
+      warm now {% elif prev == 'less_comfortable_cold' and new == 'uncomfortable_cold'
+      %}\U0001F4C9 Crossed into uncomfortable — too cold now {% elif prev == 'less_comfortable_warm'
+      and new == 'comfortable' %}\U0001F4C9 Cooled back to comfort zone {% elif prev
+      == 'less_comfortable_cold' and new == 'comfortable' %}\U0001F4C8 Warmed back
+      to comfort zone {% elif prev == 'comfortable' and new == 'less_comfortable_warm'
+      %}\U0001F4C8 Trending warm — watch this {% elif prev == 'comfortable' and new
+      == 'less_comfortable_cold' %}\U0001F4C9 Trending cool — watch this {% elif prev
+      == 'comfortable' and new == 'uncomfortable_warm' %}\U0001F4C8 Jumped straight
+      to uncomfortable warm {% elif prev == 'comfortable' and new == 'uncomfortable_cold'
+      %}\U0001F4C9 Jumped straight to uncomfortable cold {% elif prev == 'uncomfortable_warm'
+      and new == 'comfortable' %}\U0001F4C9 Big improvement — back to comfortable
+      {% elif prev == 'uncomfortable_cold' and new == 'comfortable' %}\U0001F4C8 Big
+      improvement — back to comfortable {% elif prev == 'uncomfortable_warm' and new
+      == 'uncomfortable_cold' %}↔️ Overcorrected — now too cold {% elif prev == 'uncomfortable_cold'
+      and new == 'uncomfortable_warm' %}↔️ Overcorrected — now too warm {% else %}↔️
+      Conditions changing {% endif %}"
+    active_rooms: "{% set ns = namespace(rooms=[]) %} {% for i in range(1, 7) %}\n
+      \ {% set hi_entity = 'sensor.indoor_' ~ i ~ '_heat_index' %}\n  {% set dp_entity
+      = 'sensor.indoor_' ~ i ~ '_dewpoint' %}\n  {% set state_entity = 'sensor.room_'
+      ~ i ~ '_comfort_state' %}\n  {% if states(hi_entity) not in ['unavailable',
+      'unknown'] %}\n    {% set ns.rooms = ns.rooms + [{\n      'id': i,\n      'hi':
+      states(hi_entity) | float(0),\n      'dp': states(dp_entity) | float(0),\n      'comfort_state':
+      states(state_entity),\n      'area': area_name('sensor.indoor_' ~ i ~ '_temp')\n
+      \   }] %}\n  {% endif %}\n{% endfor %} {{ ns.rooms }}\n"
+    uncomfortable_warm_rooms: '{{ active_rooms | selectattr(''comfort_state'', ''eq'',
+      ''uncomfortable_warm'') | list }}
+
+      '
+    uncomfortable_cold_rooms: '{{ active_rooms | selectattr(''comfort_state'', ''eq'',
+      ''uncomfortable_cold'') | list }}
+
+      '
+    less_comfortable_rooms: '{{ active_rooms | selectattr(''comfort_state'', ''in'',
+      [''less_comfortable_warm'', ''less_comfortable_cold'']) | list }}
+
+      '
+  mode: single

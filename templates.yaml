@@ -1,0 +1,374 @@
+- sensor:
+    # Outdoor Dewpoint
+    - name: "Outdoor Dewpoint"
+      unique_id: outdoor_dewpoint
+      unit_of_measurement: "°F"
+      availability: >-
+        {{ states('sensor.outdoor_temp') not in ['unknown', 'unavailable']
+           and states('sensor.outdoor_humidity') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set T = (states('sensor.outdoor_temp') | float(0) - 32) * 5/9 %}
+        {% set RH = states('sensor.outdoor_humidity') | float(0) %}
+        {% set a = 17.27 %}
+        {% set b = 237.7 %}
+        {% set alpha = ((a * T) / (b + T)) + (RH / 100.0) | log %}
+        {{ (((b * alpha) / (a - alpha)) * 9/5 + 32) | round(1) }}
+
+    # Indoor 1 Dewpoint
+    - name: "Indoor 1 Dewpoint"
+      unique_id: indoor_1_dewpoint
+      unit_of_measurement: "°F"
+      availability: >-
+        {{ states('sensor.indoor_1_temp') not in ['unknown', 'unavailable']
+           and states('sensor.indoor_1_humidity') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set T = (states('sensor.indoor_1_temp') | float(0) - 32) * 5/9 %}
+        {% set RH = states('sensor.indoor_1_humidity') | float(0) %}
+        {% set a = 17.27 %}
+        {% set b = 237.7 %}
+        {% set alpha = ((a * T) / (b + T)) + (RH / 100.0) | log %}
+        {{ (((b * alpha) / (a - alpha)) * 9/5 + 32) | round(1) }}
+
+    # Indoor 2 Dewpoint
+    - name: "Indoor 2 Dewpoint"
+      unique_id: indoor_2_dewpoint
+      unit_of_measurement: "°F"
+      availability: >-
+        {{ states('sensor.indoor_2_temp') not in ['unknown', 'unavailable']
+           and states('sensor.indoor_2_humidity') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set T = (states('sensor.indoor_2_temp') | float(0) - 32) * 5/9 %}
+        {% set RH = states('sensor.indoor_2_humidity') | float(0) %}
+        {% set a = 17.27 %}
+        {% set b = 237.7 %}
+        {% set alpha = ((a * T) / (b + T)) + (RH / 100.0) | log %}
+        {{ (((b * alpha) / (a - alpha)) * 9/5 + 32) | round(1) }}
+
+    # Indoor 3 Dewpoint
+    - name: "Indoor 3 Dewpoint"
+      unique_id: indoor_3_dewpoint
+      unit_of_measurement: "°F"
+      availability: >-
+        {{ states('sensor.indoor_3_temp') not in ['unknown', 'unavailable']
+           and states('sensor.indoor_3_humidity') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set T = (states('sensor.indoor_3_temp') | float(0) - 32) * 5/9 %}
+        {% set RH = states('sensor.indoor_3_humidity') | float(0) %}
+        {% set a = 17.27 %}
+        {% set b = 237.7 %}
+        {% set alpha = ((a * T) / (b + T)) + (RH / 100.0) | log %}
+        {{ (((b * alpha) / (a - alpha)) * 9/5 + 32) | round(1) }}
+
+    # Indoor 4 Dewpoint
+    - name: "Indoor 4 Dewpoint"
+      unique_id: indoor_4_dewpoint
+      unit_of_measurement: "°F"
+      availability: >-
+        {{ states('sensor.indoor_4_temp') not in ['unknown', 'unavailable']
+           and states('sensor.indoor_4_humidity') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set T = (states('sensor.indoor_4_temp') | float(0) - 32) * 5/9 %}
+        {% set RH = states('sensor.indoor_4_humidity') | float(0) %}
+        {% set a = 17.27 %}
+        {% set b = 237.7 %}
+        {% set alpha = ((a * T) / (b + T)) + (RH / 100.0) | log %}
+        {{ (((b * alpha) / (a - alpha)) * 9/5 + 32) | round(1) }}
+
+    # Indoor 5 Dewpoint
+    - name: "Indoor 5 Dewpoint"
+      unique_id: indoor_5_dewpoint
+      unit_of_measurement: "°F"
+      availability: >-
+        {{ states('sensor.indoor_5_temp') not in ['unknown', 'unavailable']
+           and states('sensor.indoor_5_humidity') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set T = (states('sensor.indoor_5_temp') | float(0) - 32) * 5/9 %}
+        {% set RH = states('sensor.indoor_5_humidity') | float(0) %}
+        {% set a = 17.27 %}
+        {% set b = 237.7 %}
+        {% set alpha = ((a * T) / (b + T)) + (RH / 100.0) | log %}
+        {{ (((b * alpha) / (a - alpha)) * 9/5 + 32) | round(1) }}
+
+    # Indoor 6 Dewpoint
+    - name: "Indoor 6 Dewpoint"
+      unique_id: indoor_6_dewpoint
+      unit_of_measurement: "°F"
+      availability: >-
+        {{ states('sensor.indoor_6_temp') not in ['unknown', 'unavailable']
+           and states('sensor.indoor_6_humidity') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set T = (states('sensor.indoor_6_temp') | float(0) - 32) * 5/9 %}
+        {% set RH = states('sensor.indoor_6_humidity') | float(0) %}
+        {% set a = 17.27 %}
+        {% set b = 237.7 %}
+        {% set alpha = ((a * T) / (b + T)) + (RH / 100.0) | log %}
+        {{ (((b * alpha) / (a - alpha)) * 9/5 + 32) | round(1) }}
+
+    # Outdoor RH from Dewpoint
+    - name: "Outdoor RH from Dewpoint"
+      unique_id: outdoor_rh_from_dewpoint
+      unit_of_measurement: "%"
+      availability: >-
+        {{ states('sensor.outdoor_dewpoint') not in ['unknown', 'unavailable']
+           and states('sensor.outdoor_temp') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set T = (states('sensor.outdoor_temp') | float(0) - 32) * 5/9 %}
+        {% set Td = (states('sensor.outdoor_dewpoint') | float(0) - 32) * 5/9 %}
+        {{ (100 * (2.718281828 ** (17.625 * Td / (243.04 + Td))) / (2.718281828 ** (17.625 * T / (243.04 + T)))) | round(1) }}
+
+    # Indoor 1 RH from Dewpoint
+    - name: "Indoor 1 RH from Dewpoint"
+      unique_id: indoor_1_rh_from_dewpoint
+      unit_of_measurement: "%"
+      availability: >-
+        {{ states('sensor.indoor_1_dewpoint') not in ['unknown', 'unavailable']
+           and states('sensor.indoor_1_temp') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set T = (states('sensor.indoor_1_temp') | float(0) - 32) * 5/9 %}
+        {% set Td = (states('sensor.indoor_1_dewpoint') | float(0) - 32) * 5/9 %}
+        {{ (100 * (2.718281828 ** (17.625 * Td / (243.04 + Td))) / (2.718281828 ** (17.625 * T / (243.04 + T)))) | round(1) }}
+
+    # Indoor 2 RH from Dewpoint
+    - name: "Indoor 2 RH from Dewpoint"
+      unique_id: indoor_2_rh_from_dewpoint
+      unit_of_measurement: "%"
+      availability: >-
+        {{ states('sensor.indoor_2_dewpoint') not in ['unknown', 'unavailable']
+           and states('sensor.indoor_2_temp') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set T = (states('sensor.indoor_2_temp') | float(0) - 32) * 5/9 %}
+        {% set Td = (states('sensor.indoor_2_dewpoint') | float(0) - 32) * 5/9 %}
+        {{ (100 * (2.718281828 ** (17.625 * Td / (243.04 + Td))) / (2.718281828 ** (17.625 * T / (243.04 + T)))) | round(1) }}
+
+    # Indoor 3 RH from Dewpoint
+    - name: "Indoor 3 RH from Dewpoint"
+      unique_id: indoor_3_rh_from_dewpoint
+      unit_of_measurement: "%"
+      availability: >-
+        {{ states('sensor.indoor_3_dewpoint') not in ['unknown', 'unavailable']
+           and states('sensor.indoor_3_temp') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set T = (states('sensor.indoor_3_temp') | float(0) - 32) * 5/9 %}
+        {% set Td = (states('sensor.indoor_3_dewpoint') | float(0) - 32) * 5/9 %}
+        {{ (100 * (2.718281828 ** (17.625 * Td / (243.04 + Td))) / (2.718281828 ** (17.625 * T / (243.04 + T)))) | round(1) }}
+
+    # Indoor 4 RH from Dewpoint
+    - name: "Indoor 4 RH from Dewpoint"
+      unique_id: indoor_4_rh_from_dewpoint
+      unit_of_measurement: "%"
+      availability: >-
+        {{ states('sensor.indoor_4_dewpoint') not in ['unknown', 'unavailable']
+           and states('sensor.indoor_4_temp') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set T = (states('sensor.indoor_4_temp') | float(0) - 32) * 5/9 %}
+        {% set Td = (states('sensor.indoor_4_dewpoint') | float(0) - 32) * 5/9 %}
+        {{ (100 * (2.718281828 ** (17.625 * Td / (243.04 + Td))) / (2.718281828 ** (17.625 * T / (243.04 + T)))) | round(1) }}
+
+    # Indoor 5 RH from Dewpoint
+    - name: "Indoor 5 RH from Dewpoint"
+      unique_id: indoor_5_rh_from_dewpoint
+      unit_of_measurement: "%"
+      availability: >-
+        {{ states('sensor.indoor_5_dewpoint') not in ['unknown', 'unavailable']
+           and states('sensor.indoor_5_temp') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set T = (states('sensor.indoor_5_temp') | float(0) - 32) * 5/9 %}
+        {% set Td = (states('sensor.indoor_5_dewpoint') | float(0) - 32) * 5/9 %}
+        {{ (100 * (2.718281828 ** (17.625 * Td / (243.04 + Td))) / (2.718281828 ** (17.625 * T / (243.04 + T)))) | round(1) }}
+
+    # Indoor 6 RH from Dewpoint
+    - name: "Indoor 6 RH from Dewpoint"
+      unique_id: indoor_6_rh_from_dewpoint
+      unit_of_measurement: "%"
+      availability: >-
+        {{ states('sensor.indoor_6_dewpoint') not in ['unknown', 'unavailable']
+           and states('sensor.indoor_6_temp') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set T = (states('sensor.indoor_6_temp') | float(0) - 32) * 5/9 %}
+        {% set Td = (states('sensor.indoor_6_dewpoint') | float(0) - 32) * 5/9 %}
+        {{ (100 * (2.718281828 ** (17.625 * Td / (243.04 + Td))) / (2.718281828 ** (17.625 * T / (243.04 + T)))) | round(1) }}
+
+    # Outdoor Heat Index
+    - name: "Outdoor Heat Index"
+      unique_id: outdoor_heat_index
+      unit_of_measurement: "°F"
+      availability: >-
+        {{ states('sensor.outdoor_rh_from_dewpoint') not in ['unknown', 'unavailable']
+           and states('sensor.outdoor_temp') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set T = states('sensor.outdoor_temp') | float(0) %}
+        {% set RH = states('sensor.outdoor_rh_from_dewpoint') | float(0) %}
+        {% set HI = -42.379 + 2.04901523*T + 10.14333127*RH
+           - 0.22475541*T*RH - 0.00683783*T*T
+           - 0.05481717*RH*RH + 0.00122874*T*T*RH
+           + 0.00085282*T*RH*RH - 0.00000199*T*T*RH*RH %}
+        {{ HI | round(1) }}
+
+    # Indoor 1 Heat Index
+    - name: "Indoor 1 Heat Index"
+      unique_id: indoor_1_heat_index
+      unit_of_measurement: "°F"
+      availability: >-
+        {{ states('sensor.indoor_1_rh_from_dewpoint') not in ['unknown', 'unavailable']
+           and states('sensor.indoor_1_temp') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set T = states('sensor.indoor_1_temp') | float(0) %}
+        {% set RH = states('sensor.indoor_1_rh_from_dewpoint') | float(0) %}
+        {% set HI = -42.379 + 2.04901523*T + 10.14333127*RH
+           - 0.22475541*T*RH - 0.00683783*T*T
+           - 0.05481717*RH*RH + 0.00122874*T*T*RH
+           + 0.00085282*T*RH*RH - 0.00000199*T*T*RH*RH %}
+        {{ HI | round(1) }}
+
+    # Indoor 2 Heat Index
+    - name: "Indoor 2 Heat Index"
+      unique_id: indoor_2_heat_index
+      unit_of_measurement: "°F"
+      availability: >-
+        {{ states('sensor.indoor_2_rh_from_dewpoint') not in ['unknown', 'unavailable']
+           and states('sensor.indoor_2_temp') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set T = states('sensor.indoor_2_temp') | float(0) %}
+        {% set RH = states('sensor.indoor_2_rh_from_dewpoint') | float(0) %}
+        {% set HI = -42.379 + 2.04901523*T + 10.14333127*RH
+           - 0.22475541*T*RH - 0.00683783*T*T
+           - 0.05481717*RH*RH + 0.00122874*T*T*RH
+           + 0.00085282*T*RH*RH - 0.00000199*T*T*RH*RH %}
+        {{ HI | round(1) }}
+
+    # Indoor 3 Heat Index
+    - name: "Indoor 3 Heat Index"
+      unique_id: indoor_3_heat_index
+      unit_of_measurement: "°F"
+      availability: >-
+        {{ states('sensor.indoor_3_rh_from_dewpoint') not in ['unknown', 'unavailable']
+           and states('sensor.indoor_3_temp') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set T = states('sensor.indoor_3_temp') | float(0) %}
+        {% set RH = states('sensor.indoor_3_rh_from_dewpoint') | float(0) %}
+        {% set HI = -42.379 + 2.04901523*T + 10.14333127*RH
+           - 0.22475541*T*RH - 0.00683783*T*T
+           - 0.05481717*RH*RH + 0.00122874*T*T*RH
+           + 0.00085282*T*RH*RH - 0.00000199*T*T*RH*RH %}
+        {{ HI | round(1) }}
+
+    # Indoor 4 Heat Index
+    - name: "Indoor 4 Heat Index"
+      unique_id: indoor_4_heat_index
+      unit_of_measurement: "°F"
+      availability: >-
+        {{ states('sensor.indoor_4_rh_from_dewpoint') not in ['unknown', 'unavailable']
+           and states('sensor.indoor_4_temp') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set T = states('sensor.indoor_4_temp') | float(0) %}
+        {% set RH = states('sensor.indoor_4_rh_from_dewpoint') | float(0) %}
+        {% set HI = -42.379 + 2.04901523*T + 10.14333127*RH
+           - 0.22475541*T*RH - 0.00683783*T*T
+           - 0.05481717*RH*RH + 0.00122874*T*T*RH
+           + 0.00085282*T*RH*RH - 0.00000199*T*T*RH*RH %}
+        {{ HI | round(1) }}
+
+    # Indoor 5 Heat Index
+    - name: "Indoor 5 Heat Index"
+      unique_id: indoor_5_heat_index
+      unit_of_measurement: "°F"
+      availability: >-
+        {{ states('sensor.indoor_5_rh_from_dewpoint') not in ['unknown', 'unavailable']
+           and states('sensor.indoor_5_temp') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set T = states('sensor.indoor_5_temp') | float(0) %}
+        {% set RH = states('sensor.indoor_5_rh_from_dewpoint') | float(0) %}
+        {% set HI = -42.379 + 2.04901523*T + 10.14333127*RH
+           - 0.22475541*T*RH - 0.00683783*T*T
+           - 0.05481717*RH*RH + 0.00122874*T*T*RH
+           + 0.00085282*T*RH*RH - 0.00000199*T*T*RH*RH %}
+        {{ HI | round(1) }}
+
+    # Indoor 6 Heat Index
+    - name: "Indoor 6 Heat Index"
+      unique_id: indoor_6_heat_index
+      unit_of_measurement: "°F"
+      availability: >-
+        {{ states('sensor.indoor_6_rh_from_dewpoint') not in ['unknown', 'unavailable']
+           and states('sensor.indoor_6_temp') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set T = states('sensor.indoor_6_temp') | float(0) %}
+        {% set RH = states('sensor.indoor_6_rh_from_dewpoint') | float(0) %}
+        {% set HI = -42.379 + 2.04901523*T + 10.14333127*RH
+           - 0.22475541*T*RH - 0.00683783*T*T
+           - 0.05481717*RH*RH + 0.00122874*T*T*RH
+           + 0.00085282*T*RH*RH - 0.00000199*T*T*RH*RH %}
+        {{ HI | round(1) }}
+
+    # Window Recommendation (legacy - room 1 only)
+    - name: "Window Recommendation"
+      unique_id: window_recommendation
+      state: >-
+        {% set out_hi = states('sensor.outdoor_heat_index') | float(0) %}
+        {% set in_hi = states('sensor.indoor_1_heat_index') | float(0) %}
+        {% set out_dp = states('sensor.outdoor_dewpoint') | float(0) %}
+        {% set in_dp = states('sensor.indoor_1_dewpoint') | float(0) %}
+        {% if out_hi < in_hi - 2 %}{% if out_dp < in_dp + 3 %}Open windows — outside feels cooler and drier{% else %}Run A/C — outside cooler but too humid{% endif %}{% elif out_hi > in_hi + 2 %}Close windows — outside warmer than inside{% else %}Neutral — no strong reason to change{% endif %}
+
+    # Room 1 Comfort State
+    - name: "Room 1 Comfort State"
+      unique_id: room_1_comfort_state
+      availability: >-
+        {{ states('sensor.indoor_1_heat_index') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set hi = states('sensor.indoor_1_heat_index') | float(0) %}{% set center = states('input_number.comfort_hi_center') | float(72) %}{% set range = states('input_number.comfort_hi_range') | float(4) %}{% set tolerance = states('input_number.comfort_hi_tolerance') | float(3) %}{% set lower = center - range %}{% set upper = center + range %}{% set lower_tol = lower - tolerance %}{% set upper_tol = upper + tolerance %}{{ 'uncomfortable_cold' if hi < lower_tol else 'less_comfortable_cold' if hi < lower else 'comfortable' if hi <= upper else 'less_comfortable_warm' if hi <= upper_tol else 'uncomfortable_warm' }}
+
+    # Room 2 Comfort State
+    - name: "Room 2 Comfort State"
+      unique_id: room_2_comfort_state
+      availability: >-
+        {{ states('sensor.indoor_2_heat_index') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set hi = states('sensor.indoor_2_heat_index') | float(0) %}{% set center = states('input_number.comfort_hi_center') | float(72) %}{% set range = states('input_number.comfort_hi_range') | float(4) %}{% set tolerance = states('input_number.comfort_hi_tolerance') | float(3) %}{% set lower = center - range %}{% set upper = center + range %}{% set lower_tol = lower - tolerance %}{% set upper_tol = upper + tolerance %}{{ 'uncomfortable_cold' if hi < lower_tol else 'less_comfortable_cold' if hi < lower else 'comfortable' if hi <= upper else 'less_comfortable_warm' if hi <= upper_tol else 'uncomfortable_warm' }}
+
+    # Room 3 Comfort State
+    - name: "Room 3 Comfort State"
+      unique_id: room_3_comfort_state
+      availability: >-
+        {{ states('sensor.indoor_3_heat_index') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set hi = states('sensor.indoor_3_heat_index') | float(0) %}{% set center = states('input_number.comfort_hi_center') | float(72) %}{% set range = states('input_number.comfort_hi_range') | float(4) %}{% set tolerance = states('input_number.comfort_hi_tolerance') | float(3) %}{% set lower = center - range %}{% set upper = center + range %}{% set lower_tol = lower - tolerance %}{% set upper_tol = upper + tolerance %}{{ 'uncomfortable_cold' if hi < lower_tol else 'less_comfortable_cold' if hi < lower else 'comfortable' if hi <= upper else 'less_comfortable_warm' if hi <= upper_tol else 'uncomfortable_warm' }}
+
+    # Room 4 Comfort State
+    - name: "Room 4 Comfort State"
+      unique_id: room_4_comfort_state
+      availability: >-
+        {{ states('sensor.indoor_4_heat_index') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set hi = states('sensor.indoor_4_heat_index') | float(0) %}{% set center = states('input_number.comfort_hi_center') | float(72) %}{% set range = states('input_number.comfort_hi_range') | float(4) %}{% set tolerance = states('input_number.comfort_hi_tolerance') | float(3) %}{% set lower = center - range %}{% set upper = center + range %}{% set lower_tol = lower - tolerance %}{% set upper_tol = upper + tolerance %}{{ 'uncomfortable_cold' if hi < lower_tol else 'less_comfortable_cold' if hi < lower else 'comfortable' if hi <= upper else 'less_comfortable_warm' if hi <= upper_tol else 'uncomfortable_warm' }}
+
+    # Room 5 Comfort State
+    - name: "Room 5 Comfort State"
+      unique_id: room_5_comfort_state
+      availability: >-
+        {{ states('sensor.indoor_5_heat_index') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set hi = states('sensor.indoor_5_heat_index') | float(0) %}{% set center = states('input_number.comfort_hi_center') | float(72) %}{% set range = states('input_number.comfort_hi_range') | float(4) %}{% set tolerance = states('input_number.comfort_hi_tolerance') | float(3) %}{% set lower = center - range %}{% set upper = center + range %}{% set lower_tol = lower - tolerance %}{% set upper_tol = upper + tolerance %}{{ 'uncomfortable_cold' if hi < lower_tol else 'less_comfortable_cold' if hi < lower else 'comfortable' if hi <= upper else 'less_comfortable_warm' if hi <= upper_tol else 'uncomfortable_warm' }}
+
+    # Room 6 Comfort State
+    - name: "Room 6 Comfort State"
+      unique_id: room_6_comfort_state
+      availability: >-
+        {{ states('sensor.indoor_6_heat_index') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {% set hi = states('sensor.indoor_6_heat_index') | float(0) %}{% set center = states('input_number.comfort_hi_center') | float(72) %}{% set range = states('input_number.comfort_hi_range') | float(4) %}{% set tolerance = states('input_number.comfort_hi_tolerance') | float(3) %}{% set lower = center - range %}{% set upper = center + range %}{% set lower_tol = lower - tolerance %}{% set upper_tol = upper + tolerance %}{{ 'uncomfortable_cold' if hi < lower_tol else 'less_comfortable_cold' if hi < lower else 'comfortable' if hi <= upper else 'less_comfortable_warm' if hi <= upper_tol else 'uncomfortable_warm' }}
+
+    # House Comfort Aggregate
+    - name: "House Comfort Aggregate"
+      unique_id: house_comfort_aggregate
+      state: >-
+        {% set state_map = {'uncomfortable_cold': -2, 'less_comfortable_cold': -1, 'comfortable': 0, 'less_comfortable_warm': 1, 'uncomfortable_warm': 2} %}
+        {% set ns = namespace(total=0, count=0) %}
+        {% for i in range(1, 7) %}
+          {% set s = states('sensor.room_' ~ i ~ '_comfort_state') %}
+          {% if s in state_map %}
+            {% set ns.total = ns.total + state_map[s] %}
+            {% set ns.count = ns.count + 1 %}
+          {% endif %}
+        {% endfor %}
+        {% if ns.count == 0 %}unavailable{% else %}{% set avg = ns.total / ns.count %}{{ 'uncomfortable_cold' if avg <= -1.5 else 'less_comfortable_cold' if avg <= -0.5 else 'comfortable' if avg <= 0.5 else 'less_comfortable_warm' if avg <= 1.5 else 'uncomfortable_warm' }}{% endif %}

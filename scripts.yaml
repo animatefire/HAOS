@@ -1,0 +1,33 @@
+pulsing_light_effect:
+  alias: Pulse All Lights
+  sequence:
+  - target:
+      entity_id: light.wiz_light
+    data:
+      brightness: 255
+    action: light.turn_on
+  - delay: '00:00:00.5'
+  - target:
+      entity_id: all
+    data:
+      brightness: 50
+    action: light.turn_on
+  - delay: '00:00:00.5'
+  - repeat:
+      count: 10
+      sequence:
+      - target:
+          entity_id: all
+        data:
+          brightness: 255
+        action: light.turn_on
+      - delay: '00:00:00.5'
+      - target:
+          entity_id: all
+        data:
+          brightness: 50
+        action: light.turn_on
+      - delay: '00:00:00.5'
+  - target:
+      entity_id: all
+    action: light.turn_off
